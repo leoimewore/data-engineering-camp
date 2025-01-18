@@ -8,3 +8,4 @@ ny_taxi_postgres_data/
 *.terraform.lock.hcl
 keys/
 *.terraform
+*.gz
