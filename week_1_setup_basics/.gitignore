@@ -3,3 +3,8 @@
 *.parquet
 .ipynb_checkpoints/
 ny_taxi_postgres_data/
+*.tfstate
+*.tfstate.backup
+*.terraform.lock.hcl
+keys/
+*.terraform
