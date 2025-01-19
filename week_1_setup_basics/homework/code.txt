@@ -34,3 +34,63 @@ python ingest_zone.py \
     --db=ny_taxi \
     --table_name=zones \
     --url=${URL}
+
+
+    #Question4
+Trip Segmentation Count
+    SELECT COUNT(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-01 00:00:00' AND
+ lpep_pickup_datetime<= '2019-10-31 23:59:59' AND
+ trip_distance<=1;  Answer: 
+ SELECT COUNT(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-01 00:00:00' AND
+ lpep_pickup_datetime< '2019-11-01 00:00:00' AND
+ trip_distance>1 AND
+ trip_distance<=3; 198995
+
+ SELECT COUNT(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-01 00:00:00' AND
+ lpep_pickup_datetime< '2019-11-01 00:00:00' AND
+ trip_distance>3 AND
+ trip_distance<=7; 109642
+
+ SELECT COUNT(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-01 00:00:00' AND
+ lpep_pickup_datetime<= '2019-10-31 23:59:59' AND
+ trip_distance>7 AND
+ trip_distance<=10; 27686
+
+
+ SELECT COUNT(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-01 00:00:00' AND
+ lpep_pickup_datetime< '2019-11-01 00:00:00' AND
+ trip_distance>10; 35201
+
+
+ Longest Trip Each Day
+ SELECT MAX(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-11 00:00:00' AND
+ lpep_pickup_datetime<= '2019-10-11 23:59:59' ; Ans=95.78
+
+ SELECT MAX(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-24 00:00:00' AND
+ lpep_pickup_datetime<= '2019-10-24 23:59:59' ; 90.75
+
+ SELECT MAX(trip_distance) FROM green_taxi_trips
+WHERE
+ lpep_pickup_datetime>= '2019-10-26 00:00:00' AND
+ lpep_pickup_datetime<= '2019-10-26 23:59:59' ; 91.56
+
+ 515.89
+
+
+
+
+
