@@ -1,0 +1,14 @@
+id: push_to_git
+namespace: system
+
+tasks:
+  - id: commit_and_push
+    type: io.kestra.plugin.git.PushFlows
+    sourceNamespace: dev # the namespace from which flows are pushed
+    branch: main
+    gitDirectory: week_2_kestra/flows
+    url: https://github.com/leoimewore/data-engineering-camp.git # required string
+    username: leoimewore # required string needed for Auth with Git
+    password: "{{ secret('GITHUB_ACCESS_TOKEN') }}"
+    commitMessage: "add flows {{ now() }}" # optional string
+    dryRun: false  # if true, you'll see what files will be added, modified or deleted based on the state in Git without overwriting the files yet
