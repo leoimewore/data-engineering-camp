@@ -1,0 +1,31 @@
+#Count all rows in green taxi table for 2020
+SELECT SUM(row_count) AS total_green_table_row_count FROM (
+SELECT COUNT(*) AS row_count FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_02`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_03`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_04`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_05`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_06`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_07`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_08`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_09`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_10`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_11`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_12`
+UNION ALL
+SELECT COUNT(*) AS row_count  FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_2020_01` ) AS counts
+
+
+
+#Count rows in yellow taxi data from March 2021
+
+SELECT COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.yellow_tripdata_2021_03` LIMIT 1000
