@@ -1,0 +1,24 @@
+#1 SELECT  COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`;
+840402
+
+#2
+SELECT COUNT(DISTINCT PULocationID) FROM `dataengineerproject-448203.zoomcamp_dataset.green_external_table_2022`
+SELECT COUNT(DISTINCT PULocationID) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`
+
+#3
+SELECT COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`
+WHERE
+fare_amount = 0
+1622
+
+#4
+Partition by lpep_pickup_datetime Cluster on PUlocationID
+
+#5
+SELECT DISTINCT PULocationID FROM dataengineerproject-448203.zoomcamp_dataset.green_external_table_2022_partitioned
+WHERE 
+DATE(lpep_pickup_datetime) BETWEEN "2022-06-01" AND "2022-06-30"
+
+SELECT DISTINCT PULocationID FROM dataengineerproject-448203.zoomcamp_dataset.green_external_table_2022
+WHERE 
+DATE(lpep_pickup_datetime) BETWEEN "2022-06-01" AND "2022-06-30"
