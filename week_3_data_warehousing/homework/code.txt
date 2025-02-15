@@ -1,15 +1,25 @@
-#1 SELECT  COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`;
-840402
+CREATE EXTERNAL TABLE `dataengineerproject-448203.zoomcamp_dataset.yellow_taxi_2024_external`
+  OPTIONS (
+    format ="PARQUET",
+    uris = ['gs://dataengineerproject-448203-bucket1/yellow_tripdata_2024-*.parquet']
+    );
+
+
+
+
+
+#1 SELECT  COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.yellow_taxi_2024_external``;
+20332093
 
 #2
-SELECT COUNT(DISTINCT PULocationID) FROM `dataengineerproject-448203.zoomcamp_dataset.green_external_table_2022`
+SELECT COUNT(DISTINCT PULocationID) FROM `dataengineerproject-448203.zoomcamp_dataset.yellow_taxi_2024_external`
 SELECT COUNT(DISTINCT PULocationID) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`
 
-#3
-SELECT COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.green_tripdata_parquet`
+#4
+SELECT COUNT(*) FROM `dataengineerproject-448203.zoomcamp_dataset.yellow_taxi_2024_external`
 WHERE
 fare_amount = 0
-1622
+8333
 
 #4
 Partition by lpep_pickup_datetime Cluster on PUlocationID
