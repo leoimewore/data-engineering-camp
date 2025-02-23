@@ -1,0 +1,171 @@
+id: chicago_traffic_data_vehicles
+namespace: dev
+
+
+variables:
+  username: "{{kv('API_KEY_ID')}}"
+  password: "{{kv('API_KEY_SECRET')}}"
+  app_token: "{{kv('app_token')}}"
+ 
+
+# tasks:
+#   - id: loop
+#     type: io.kestra.plugin.core.flow.ForEach
+#     values:
+#       - "u6pd-qa9d"
+#       - "85ca-t3if"
+#       - "68nd-jvt3"
+    
+
+tasks:
+  - id: extract_traffic_crashes
+    type: io.kestra.plugin.scripts.python.Script
+    outputFiles:
+      - "output_dataset.csv"
+
+    beforeCommands:
+      - pip install pandas
+      - pip install sodapy
+    script: |
+      import pandas as pd
+      from sodapy import Socrata
+      import numpy as np
+      chunk_size = 1000
+      offset = 0
+      first_chunk=True
+      seen_ids = set()
+      client = Socrata("data.cityofchicago.org", "{{vars.app_token}}", username="{{vars.username}}", password="{{vars.password}}")
+      columns_order = ['crash_unit_id', 'crash_record_id', 'crash_date', 'unit_no', 'unit_type', 'vehicle_id', 'make', 'model','vehicle_defect','vehicle_type', 'vehicle_use', 'travel_direction', 'maneuver', 'occupant_cnt', 'first_contact_point', 'vehicle_year']
+      
+      while True: 
+
+        results = client.get("68nd-jvt3" , limit=chunk_size , offset=offset)
+        if not results:
+          break
+
+        df = pd.DataFrame.from_records(results)
+        df.drop(columns=["area_99_i", "lic_plate_state"], inplace=True)
+        df.drop(df.columns[19:], axis=1 ,inplace=True)
+        
+        df.replace("", np.nan, inplace=True)
+        df.fillna("null", inplace=True)
+        df['crash_date'] = pd.to_datetime(df['crash_date'], errors='coerce')
+       
+
+        if 'crash_unit_id' not in df.columns:
+          raise ValueError("Dataset does not contain a unique 'crash_unit_id' column.")
+        df = df
+        df = df[~df['crash_unit_id'].isin(seen_ids)]
+        seen_ids.update(df['crash_unit_id'])
+
+        df = df[columns_order]
+
+        if not df.empty:
+          df.to_csv("output_dataset.csv", mode='a', index=False, header=first_chunk)
+          first_chunk = False
+        offset += chunk_size
+        if offset == 2000:
+          break
+
+        print("Data fetching and merging completed without duplicates.")
+
+  - id: debug_outputs
+    type: io.kestra.plugin.core.debug.Return
+    format: "{{ outputs.extract['outputFiles']['output_dataset.csv']}}"
+  - id: upload_vehicle_data_to_gcs
+    type: io.kestra.plugin.gcp.gcs.Upload
+    from: "{{ outputs.extract.outputFiles['output_dataset.csv']}}"
+
+    to: "gs://{{kv('GCP_BUCKET_NAME')}}/traffic_crashes_vehicles.csv"
+
+  # - id: purge_files
+  #   type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+  #   description: To avoid cluttering your storage, we will remove the downloaded files
+
+
+  - id: bq_vehicles_data
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE TABLE IF NOT EXISTS `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data`(
+      unique_id_vehicle BYTES OPTIONS(description = 'Unique key for this dataset'),
+      crash_unit_id INTEGER OPTIONS (description = 'A unique identifier for each vehicle record.'),
+      crash_record_id STRING OPTIONS (description = 'This number can be used to link to the same crash in the Crashes and People datasets. This number also serves as a unique ID in the Crashes dataset.'),
+      crash_date TIMESTAMP OPTIONS (description = 'Date and time of crash as entered by the reporting officer'),
+      unit_no INTEGER OPTIONS (description = 'A unique ID for each unit within a specific crash report.'),
+      unit_type STRING OPTIONS (description ='The type of unit'),
+      vehicle_id STRING OPTIONS (description = '') ,
+      make STRING OPTIONS (description = 'The make (brand) of the vehicle, if relevant'),
+      model STRING OPTIONS (description = 'The model of the vehicle, if relevant'),
+      vehicle_defect STRING OPTIONS (description = '') ,
+      vehicle_type STRING OPTIONS (description = 'The type of vehicle, if relevant'),
+      vehicle_use STRING OPTIONS (description ='The normal use of the vehicle, if relevant'),
+      travel_direction STRING OPTIONS (description = 'The direction in which the unit was traveling prior to the crash, as determined by the reporting officer'), 
+      maneuver STRING OPTIONS (description = 'The action the unit was taking prior to the crash, as determined by the reporting officer'), occupant_cnt STRING OPTIONS (description = 'The number of people in the unit, as determined by the reporting officer'), 
+      first_contact_point STRING OPTIONS (description = '') , 
+      vehicle_year STRING OPTIONS (description = 'The model year of the vehicle, if relevant')
+      )
+      PARTITION BY DATE(crash_date)
+
+
+  - id: bq_vehicles_data_external
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE EXTERNAL TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data_ext`(
+      crash_unit_id INTEGER OPTIONS (description = 'A unique identifier for each vehicle record.'),
+      crash_record_id STRING OPTIONS (description = 'This number can be used to link to the same crash in the Crashes and People datasets. This number also serves as a unique ID in the Crashes dataset.'),
+      crash_date TIMESTAMP OPTIONS (description = 'Date and time of crash as entered by the reporting officer'),
+      unit_no INTEGER OPTIONS (description = 'A unique ID for each unit within a specific crash report.'),
+      unit_type STRING OPTIONS (description ='The type of unit'),
+      vehicle_id STRING OPTIONS (description = '') ,
+      make STRING OPTIONS (description = 'The make (brand) of the vehicle, if relevant'),
+      model STRING OPTIONS (description = 'The model of the vehicle, if relevant'),
+      vehicle_defect STRING OPTIONS (description = '') ,
+      vehicle_type STRING OPTIONS (description = 'The type of vehicle, if relevant'),
+      vehicle_use STRING OPTIONS (description ='The normal use of the vehicle, if relevant'),
+      travel_direction STRING OPTIONS (description = 'The direction in which the unit was traveling prior to the crash, as determined by the reporting officer'), 
+      maneuver STRING OPTIONS (description = 'The action the unit was taking prior to the crash, as determined by the reporting officer'), occupant_cnt STRING OPTIONS (description = 'The number of people in the unit, as determined by the reporting officer'), 
+      first_contact_point STRING OPTIONS (description = '') , 
+      vehicle_year STRING OPTIONS (description = 'The model year of the vehicle, if relevant')
+
+      )
+      OPTIONS (
+      format = 'CSV',
+      uris = ["gs://{{kv('GCP_BUCKET_NAME')}}/traffic_crashes_vehicles.csv"],
+      skip_leading_rows = 1,
+      ignore_unknown_values = TRUE
+      )
+
+
+  - id: bq_vehicles_table_tmp
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data_tmp`
+      AS
+      SELECT
+        MD5(CONCAT(
+          COALESCE(CAST(crash_unit_id AS STRING), ""),
+          COALESCE(CAST(crash_record_id AS STRING), ""),
+          COALESCE(CAST(crash_date AS STRING), ""),
+          COALESCE(CAST(unit_no AS STRING), "")
+        )) AS unique_id_vehicle,
+        * 
+      FROM `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data_ext`
+
+  - id: bq_persons_merge
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      MERGE INTO `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data` T
+      USING `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.vehicles_data_tmp` S
+      ON T.unique_id_vehicle = S.unique_id_vehicle
+      WHEN NOT MATCHED THEN
+        INSERT (unique_id_vehicle, crash_unit_id, crash_record_id, crash_date, unit_no, unit_type, vehicle_id, make, model,vehicle_defect,vehicle_type, vehicle_use, travel_direction, maneuver, occupant_cnt, first_contact_point, vehicle_year )
+        VALUES (S.unique_id_vehicle, S.crash_unit_id, S.crash_record_id, S.crash_date, S.unit_no, S. unit_type, S.vehicle_id, S.make, S.model, S.vehicle_defect, S.vehicle_type, S.vehicle_use, S.travel_direction, S.maneuver, S.occupant_cnt, S.first_contact_point,S.vehicle_year );
+
+            
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values:
+      serviceAccount: "{{kv('GCP_CREDS')}}"
+      projectId: "{{kv('GCP_PROJECT_ID')}}"
+      location: "{{kv('GCP_LOCATION')}}"
+      bucket: "{{kv('GCP_BUCKET_NAME')}}"

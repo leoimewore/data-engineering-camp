@@ -1,0 +1,8 @@
+FROM
+`dataengineerproject-448203.taxi_rides.fct_fhv_monthly_zone_traveltime_p90`
+WHERE fhv_month = 11 and fhv_year=2019 and zone = "Yorkville East"
+ORDER BY travel_time_p90 DESC
+LIMIT 2 OFFSET 1
+
+
+--Added all my file to dbt project----
