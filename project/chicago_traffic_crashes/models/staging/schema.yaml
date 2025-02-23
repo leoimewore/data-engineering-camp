@@ -1,0 +1,12 @@
+version: 2
+sources:
+  - name: staging
+    database: dataengineerproject-448203
+    schema: chicago_traffic_crashes
+
+
+    tables:
+      - name: vehicles_data
+      - name: traffic_data
+      - name: persons_data
+      
