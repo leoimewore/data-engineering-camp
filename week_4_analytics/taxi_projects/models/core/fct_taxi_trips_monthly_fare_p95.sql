@@ -17,12 +17,6 @@ trip_distance,
 fare_amount,
 payment_type_description,
 
-percent_rank() over (
-    partition by service_type, pickup_year, pickup_month
-    order by fare_amount
-) as fare_percentile
-
-
 from 
 
 trips_data
