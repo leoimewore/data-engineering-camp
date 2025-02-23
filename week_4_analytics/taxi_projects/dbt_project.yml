@@ -39,8 +39,7 @@ models:
   taxi_rides_ny:
 
 
-vars:
-  is_test_run: true  # or false when you don't want the limit
+
 
 
 
