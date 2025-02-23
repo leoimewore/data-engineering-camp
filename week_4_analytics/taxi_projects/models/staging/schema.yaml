@@ -16,7 +16,7 @@ models:
   - name: stg_fhv_tripdata
     description: ""
     columns:
-      - name: sr_flag
+      - name: SR_Flag
         data_type: string
         description: ""
 

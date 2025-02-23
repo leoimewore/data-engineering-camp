@@ -4,19 +4,24 @@
     )
 }}
 
-with fhv_tripdata as 
-(
-    select 
-    coalesce(replace(cast(SR_Flag as string),'1' , 'Shared-Rides'), 'Non-Shared-Rides') as SR_Flag,
-    dispatching_base_num as dispacth_Number,
-    pickup_datetime,
-    dropOff_datetime as dropoff_datetime,
-    PULocationID,
-    DOLocationID
-   
-    from 
-    {{ source('staging','fhv_tripdata') }}
-    
+WITH fhv_tripdata AS (
+    SELECT 
+        COALESCE(REPLACE(CAST(SR_Flag AS STRING), '1', 'Shared-Rides'), 'Non-Shared-Rides') AS SR_Flag,
+        dispatching_base_num AS dispatch_Number,
+        pickup_datetime,
+        dropOff_datetime AS dropoff_datetime,
+        PULocationID AS pulocationid,
+        DOLocationID AS dolocationid
+    FROM 
+        {{ source('staging', 'fhv_tripdata') }}
 )
 
-select * from fhv_tripdata
+SELECT * 
+FROM fhv_tripdata;
+
+
+{% if var('is_test_run', default=true) %}
+
+  limit 100
+
+{% endif %}
