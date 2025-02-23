@@ -13,32 +13,7 @@ sources:
 
 
 models:
-  - name: stg_fhv_tripdata
-    description: ""
-    columns:
-      - name: SR_Flag
-        data_type: string
-        description: ""
-
-      - name: dispacth_number
-        data_type: string
-        description: ""
-
-      - name: pickup_datetime
-        data_type: timestamp
-        description: ""
-
-      - name: dropoff_datetime
-        data_type: timestamp
-        description: ""
-
-      - name: pulocationid
-        data_type: string
-        description: ""
-
-      - name: dolocationid
-        data_type: string
-        description: ""
+       
 
   - name: stg_raw_nyc_green
     description: ""
