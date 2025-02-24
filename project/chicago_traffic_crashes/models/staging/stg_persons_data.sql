@@ -8,13 +8,11 @@
 WITH persons_data AS (
     SELECT  
         *,
-        CASE 
-            WHEN SAFE_CAST(safety_equipment AS STRING) IS NULL OR SAFE_CAST(safety_equipment AS STRING) = '' THEN 'USAGE UNKNOWN'
-            ELSE SAFE_CAST(safety_equipment AS STRING)
-        END AS safety_equipment_updated
+        {{fill_safety_equipment('safety_equipment')}} as safety_equipment_updated,
     FROM {{ source('staging','persons_data') }}
-    WHERE age IS NOT NULL 
-    AND SAFE_CAST(age AS INT64) IS NOT NULL
+    WHERE  age != 0
+    
+    
 )
 
 
@@ -23,6 +21,13 @@ WITH persons_data AS (
 select * 
 from 
 persons_data
+
+-- dbt build --select <model.sql> --vars '{'is_test_run': 'false'}'
+{% if var('is_test_run', default=false) %}
+
+  limit 100
+
+{% endif %}
 
 
 

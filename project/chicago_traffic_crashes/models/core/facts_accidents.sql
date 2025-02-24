@@ -5,10 +5,17 @@
 }}
 
 with persons_data as (
-    select * from 
+    select 
+    person_id,
+    crash_record_id,
+    vehicle_id,
+    crash_date,
+    sex,
+    safety_equipment_updated,
+    age,
+     from 
     {{ ref('stg_persons_data') }}
-    WHERE age IS NOT NULL 
-    AND SAFE_CAST(age AS INT64) IS NOT NULL
+
 )
 
 
