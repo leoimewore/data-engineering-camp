@@ -44,10 +44,13 @@ def extract_file():
         upload_to_gcs("dataengineerproject-448203-bucket1", csv_file, blob_path )
 
 
-        
-
-
 extract_file()
+
+
+
+
+
+
 
 
 
