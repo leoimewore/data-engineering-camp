@@ -12,7 +12,7 @@ sources:
 
 models:
   - name: stg_vehicles_data
-    description: ""
+    description: "data_for vehicles"
     columns:
       - name: unique_id
         data_type: bytes
