@@ -26,7 +26,8 @@ select
     crash_info.weather_condition,
     crash_info.lighting_condition,
     crash_info.road_defect,
-    crash_info.injuries_total
+    crash_info.injuries_total,
+    crash_info.injuries_fatal
 from 
     crash_id_data
 inner join crash_info
