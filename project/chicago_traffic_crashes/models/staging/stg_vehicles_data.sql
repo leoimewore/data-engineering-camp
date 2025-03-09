@@ -6,8 +6,12 @@
 
 
 with vehicles_data as (
-    select * 
-    from {{ source('staging','vehicles_data') }}
+    select
+    * except(make,model),
+    
+    {{update_pedestrain_info('make')}} as make,
+    {{update_pedestrain_info('model')}} as model
+    from {{ source('staging','vehicle_data') }}
 )
 
 
@@ -15,9 +19,3 @@ select *
 from 
 vehicles_data
 
--- dbt build --select <model_name> --vars '{'is_test_run': 'false'}'
-{% if var('is_test_run', default=true) %}
-
-       limit 10
-
-{% endif %}

@@ -6,7 +6,7 @@ sources:
 
 
     tables:
-      - name: vehicles_data
-      - name: traffic_data
-      - name: persons_data
+      - name: vehicle_data
+      - name: crash_data
+      - name: person_data
       
