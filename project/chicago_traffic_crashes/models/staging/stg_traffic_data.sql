@@ -6,12 +6,12 @@
 
 
 with traffic_crashes_data as (
-    select * 
+    select *
     from {{ source('staging','crash_data') }}
 )
 
 
-select * 
+select *  
 from 
 traffic_crashes_data
 
