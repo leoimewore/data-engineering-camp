@@ -18,7 +18,8 @@ WITH persons_data AS (
 
 
 
-select * 
+select *,
+cast(crash_date as timestamp) as traffic_crash_date
 from 
 persons_data
 
