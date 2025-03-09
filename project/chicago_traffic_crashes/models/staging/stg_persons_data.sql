@@ -9,7 +9,7 @@ WITH persons_data AS (
     SELECT  
         *,
         {{fill_safety_equipment('safety_equipment')}} as safety_equipment_updated,
-    FROM {{ source('staging','persons_data') }}
+    FROM {{ source('staging','person_data') }}
     WHERE  age != 0
     
     

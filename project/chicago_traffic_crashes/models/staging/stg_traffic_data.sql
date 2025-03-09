@@ -7,7 +7,7 @@
 
 with traffic_crashes_data as (
     select * 
-    from {{ source('staging','traffic_data') }}
+    from {{ source('staging','crash_data') }}
 )
 
 
@@ -16,8 +16,8 @@ from
 traffic_crashes_data
 
 -- dbt build --select <model_name> --vars '{'is_test_run': 'false'}'
-{% if var('is_test_run', default=true) %}
+{% if var('is_test_run', default=false) %}
 
-       limit 10
+       limit 100
 
 {% endif %}
