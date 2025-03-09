@@ -9,7 +9,7 @@ with crash_id_data as (
     select *
 
     from {{ ref('stg_persons_data') }}
-    where person_type != 'PASSENGER'
+    where person_type != 'PASSENGER' and age > 15
 )
 
 

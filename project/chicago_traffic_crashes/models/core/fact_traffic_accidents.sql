@@ -9,7 +9,7 @@ with crash_id_data as (
     select *,
     row_number() over(partition by person_type, crash_record_id order by traffic_crash_date desc) as rn
     from {{ ref('stg_persons_data') }}
-    where person_type != 'PASSENGER'
+    where person_type != 'PASSENGER' 
 ),
 
 crash_info as (
@@ -19,7 +19,6 @@ crash_info as (
 
 select
     crash_id_data.person_type,
-    crash_id_data.age,
     crash_id_data.traffic_crash_date,
     crash_id_data.crash_month,
     crash_id_data.crash_year,
