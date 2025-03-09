@@ -11,3 +11,4 @@ keys/
 *.csv
 *.parquet
 *.crc
+*_SUCCESS
