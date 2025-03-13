@@ -1,0 +1,15 @@
+default:
+  outputs:
+    dev:
+      dataset: chicago_traffic_crashes
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: us-central1
+      method: service-account
+      priority: interactive
+      project: dataengineerproject-448203
+      threads: 1
+      type: bigquery
+      keyfile: /root/.dbt/my-cred.json
+        
+  target: dev
